@@ -2,7 +2,6 @@ import json
 import datetime
 import os
 import re
-import pandas as pd
 
 def load_json(path):
     with open(path) as f:

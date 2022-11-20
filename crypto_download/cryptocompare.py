@@ -23,7 +23,7 @@ class CryptoCompareAPI():
         self.file_format = None
 
     def check_crypto_save(self):
-        self.file_format = f'{self.date}-{self.exchange}-{self.fsym}-{self.tsym}.json'
+        self.file_format = f'{self.exchange}-{self.fsym}-{self.tsym}-{self.date}.json'
         if os.path.isfile(f'{self.cache_path}/{self.file_format}') != True:
             return False
         else:
@@ -36,12 +36,12 @@ class CryptoCompareAPI():
             search = re.search(f'{time.date()}', file)
             if search == None:
                 os.remove(f'{self.cache_path}/{file}')
-                print(f'{file} removed')
+                print(f'    {file} removed')
 
     def download_data(self):
         if self.check_crypto_save() == False:
-            url = f'https://min-api.cryptocompare.com/data/v2/pair/mapping/fsym?fsym={self.fsym}&api_key={self.api_key}'
-            url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={self.fsym}&tsym=USDT&limit=100&e=Binance&api_key={self.api_key}'
+ 
+            url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={self.fsym}&tsym={self.tsym}&limit=100&e={self.exchange}&api_key={self.api_key}'
             response = requests.get(url)
             if response.status_code != 200:
                 raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
@@ -52,18 +52,19 @@ class CryptoCompareAPI():
                     raise Exception(data['Message'])
 
                 data = data['Data']
-                print(data)
 
                 with open(f'{self.cache_path}/{self.file_format}', 'w') as f:
                     json.dump(data, f, indent=4)
+
+                print(f'    {self.file_format} downloaded.')
         else:
-            print(f'    {self.fsym}-{self.tsym} already downloaded.')
+            print(f'    {self.file_format} already downloaded.')
 
     def run_all(self):
         self.remove_file()
         self.download_data()
         return
 
-CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USD',4,5).run_all()
+CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance',5).run_all()
 
 
