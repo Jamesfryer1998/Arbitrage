@@ -1,0 +1,39 @@
+{
+    "fsym": [
+      "ADA",
+      "ATOM",
+      "AVAX",
+      "BNB",
+      "BTC",
+      "DOGE",
+      "ETH",
+      "FLOW",
+      "FTT",
+      "FTX",
+      "LINK",
+      "LTC",
+      "LUNC",
+      "MANA",
+      "MATIC",
+      "SHIB",
+      "SOL",
+      "TRX",
+      "XLM",
+      "XMR",
+      "XRP"
+    ],
+
+    "tsym": [
+      "USD",
+      "USDT",
+      "BUSD",
+      "USDC",
+      "GBP"
+    ],
+
+    "exchanges": [
+      "Binance",
+      "Kraken",
+      "Coinbase"
+    ]
+  }
