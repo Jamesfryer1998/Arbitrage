@@ -40,7 +40,6 @@ class CryptoCompareAPI():
 
     def download_data(self):
         if self.check_crypto_save() == False:
- 
             url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={self.fsym}&tsym={self.tsym}&limit=100&e={self.exchange}&api_key={self.api_key}'
             response = requests.get(url)
             if response.status_code != 200:
