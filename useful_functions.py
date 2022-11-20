@@ -19,5 +19,5 @@ def remove_date_files(file_path):
             print(f'{file} removed')
 
 def time_convert(unix):
-     return datetime.datetime.utcfromtimestamp(1668902400).strftime('%Y-%m-%d') 
+     return datetime.datetime.utcfromtimestamp(unix).strftime('%Y-%m-%d') 
 
