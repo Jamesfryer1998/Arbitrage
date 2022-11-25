@@ -51,7 +51,6 @@ class CryptoCompareAPI():
                     raise Exception(data['Message'])
 
                 data = data['Data']
-
                 with open(f'{self.cache_path}/{self.file_format}', 'w') as f:
                     json.dump(data, f, indent=4)
 
@@ -64,4 +63,7 @@ class CryptoCompareAPI():
         self.download_data()
         return
 
-CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance',5).run_all()
+
+
+
+# CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance',5).run_all()
