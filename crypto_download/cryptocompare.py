@@ -8,7 +8,7 @@ from useful_functions import load_json
 import datetime
 
 class CryptoCompareAPI():
-    def __init__(self, cache_path, fsym, tsym, exchange, period):
+    def __init__(self, cache_path, fsym, tsym, exchange):
         self.cache_path = cache_path
         if not os.path.isdir(self.cache_path):
                 raise Exception(f"{self.cache_path} does not exist")
@@ -66,4 +66,4 @@ class CryptoCompareAPI():
 
 
 
-# CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance',5).run_all()
+# CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance').run_all()
