@@ -13,10 +13,10 @@ class CryptoCompareAPI():
         if not os.path.isdir(self.cache_path):
                 raise Exception(f"{self.cache_path} does not exist")
 
+        self.error_count = 0
         self.fsym = fsym
         self.tsym = tsym
         self.exchange = exchange
-        self.period = period
         self.api_key = load_json('/Users/james/Projects/arbitrage/crypto_download/api.json')['API_KEY']
         time = datetime.datetime.now()
         self.date = time.date()
@@ -48,7 +48,9 @@ class CryptoCompareAPI():
                 data = response.json()
 
                 if data['Response'] == 'Error':
-                    raise Exception(data['Message'])
+                    self.error_count += 1
+                    pass
+                    # raise Exception(data['Message'])
 
                 data = data['Data']
                 with open(f'{self.cache_path}/{self.file_format}', 'w') as f:
