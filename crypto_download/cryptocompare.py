@@ -12,7 +12,6 @@ class CryptoCompareAPI():
         self.cache_path = cache_path
         if not os.path.isdir(self.cache_path):
                 raise Exception(f"{self.cache_path} does not exist")
-
         self.error_count = 0
         self.fsym = fsym
         self.tsym = tsym
@@ -48,18 +47,26 @@ class CryptoCompareAPI():
                 data = response.json()
 
                 if data['Response'] == 'Error':
-                    self.error_count += 1
-                    pass
+                    # print('error', self.file_format)
+                    
+                    # self.error_count += 1
                     # raise Exception(data['Message'])
-
+                    pass
+                
                 data = data['Data']
-                with open(f'{self.cache_path}/{self.file_format}', 'w') as f:
-                    json.dump(data, f, indent=4)
 
-                print(f'    {self.file_format} downloaded.')
+                if len(data) != 0:
+                    with open(f'{self.cache_path}/{self.file_format}', 'w') as f:
+                        json.dump(data, f, indent=4)
+                    print(f'    {self.file_format} downloaded.')
+                else:
+                    pass
         else:
             print(f'    {self.file_format} already downloaded.')
 
+    def error_return(self):
+        return self.error_count
+    
     def run_all(self):
         self.remove_file()
         self.download_data()

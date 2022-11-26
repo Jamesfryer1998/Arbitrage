@@ -21,9 +21,6 @@ def main():
     fsym_ref = ref_data['fsym']
     tsym_ref = ref_data['tsym']
     exchange_ref = ref_data['exchanges']
-    print(fsym_ref)
-    print(tsym_ref)
-    print(exchange_ref)
     count = 0
     
     for exchange in exchange_ref:
@@ -33,9 +30,9 @@ def main():
                     t = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
                     t.start()
                     count += 1
-                except (Exception) as error:
-                    print(f'error here{error}')
-                    raise Exception('STOP')
+                    time.sleep(0.01)
+                except Exception as error:
+                    raise Exception(error)
 
     t2 = datetime.datetime.now()
 
