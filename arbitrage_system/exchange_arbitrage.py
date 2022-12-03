@@ -17,6 +17,7 @@ class Arbitrage:
         self.fees = ref_data['exchange_fees']
         self.symbol = None
         self.arbitrage = None
+        self.arbitrage_file = '/Users/james/Projects/arbitrage/arbitrage_system/arbitrage_opportunities.json'
         
     def compare_matching_symbols(self):
         print('Comparing symbols across exchanges')
@@ -47,9 +48,9 @@ class Arbitrage:
 
     def profitable_exchanges(self):
         sorted_arbitrage = sorted(self.arbitrage, key=lambda k: k['close'])
-
         selling = sorted_arbitrage[-1]
         buying = sorted_arbitrage[0]
+
         if buying['time'] == selling['time']:
             print(f'Buy: {buying}')
             print(f'Sell: {selling}')
@@ -67,12 +68,27 @@ class Arbitrage:
             print(f'fees: {all_fees}')
 
             if diff > all_fees:
-                if os.path.exists("/Users/james/Projects/arbitrage/arbitrage_system/arbitrage_opportunities.json") == False:
+                dict = [{'time':datetime.utcfromtimestamp(buying['time']).strftime('%Y-%m-%d'),
+                        'buy_exchange':buying['exchange'],
+                        'sell_exchange':selling['exchange'],
+                        'symbol':self.symbol,
+                        'buying_close':buying['close'],
+                        'selling_close':selling['close']
+                        }]
+                if os.path.exists(self.arbitrage_file) == False:
                     ########################### HERERERERE
-                    with open("sample.json", "w") as outfile:
-                        json.dump(dictionary, outfile) 
+                    with open(self.arbitrage_file, "w") as file:
+                        json.dump(dict, file, indent=3)
+                else:
+                    arbitrage_data = load_json(self.arbitrage_file)
+                    print(arbitrage_data)
+                    
+                    # with open(self.arbitrage_file, "w") as file:
+                    #     json.dump(data, file, indent=3)
 
-                print(diff-all_fees)
+
+
+                # print(diff-all_fees)
         else:
             print(f'Arbitrage time stamps dont match: {buying["time"]} / {selling["time"]}')
 
