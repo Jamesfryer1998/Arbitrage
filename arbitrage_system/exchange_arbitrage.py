@@ -7,10 +7,9 @@ sys.path.insert(0, '/Users/james/Projects/arbitrage')
 from useful_functions import load_json
 
 class Arbitrage:
-    def __init__(self, fsym, tsym, exchanges, cache_path):
+    def __init__(self, fsym, tsym, cache_path):
         self.fsym = fsym
         self.tsym = tsym
-        self.exchanges = exchanges
         self.cache_path = cache_path
         # ADD IN FEES HERE, JUST A LIST OF FEES FROM EXCHANGES
         ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
@@ -64,40 +63,51 @@ class Arbitrage:
                     buying_fee = value
     
             all_fees = selling_fee + buying_fee
+            profit = diff - all_fees
             print(f'diff: {diff}')
             print(f'fees: {all_fees}')
+            print(profit)
 
-            if diff > all_fees:
+            if profit > 1:
                 dict = [{'time':datetime.utcfromtimestamp(buying['time']).strftime('%Y-%m-%d'),
                         'buy_exchange':buying['exchange'],
                         'sell_exchange':selling['exchange'],
                         'symbol':self.symbol,
                         'buying_close':buying['close'],
-                        'selling_close':selling['close']
+                        'selling_close':selling['close'],
+                        'profit':diff - all_fees
                         }]
+
                 if os.path.exists(self.arbitrage_file) == False:
-                    ########################### HERERERERE
                     with open(self.arbitrage_file, "w") as file:
                         json.dump(dict, file, indent=3)
                 else:
                     arbitrage_data = load_json(self.arbitrage_file)
-                    print(arbitrage_data)
-                    
-                    # with open(self.arbitrage_file, "w") as file:
-                    #     json.dump(data, file, indent=3)
+                    if dict[0] in arbitrage_data:
+                        print('already here')
+                        pass
+                    else:
+                        print('adding')
+                        arbitrage_data.append(dict[0])
+                        with open(self.arbitrage_file, "w+") as file:
+                            json.dump(arbitrage_data, file, indent=2)
 
-
-
-                # print(diff-all_fees)
         else:
             print(f'Arbitrage time stamps dont match: {buying["time"]} / {selling["time"]}')
 
-    def arbitrage_opportunities(self):
-        return
+    def find_arbitrage(self):
+        self.compare_matching_symbols()
+        self.profitable_exchanges()
 
-arb = Arbitrage('ETH', 'USD', '1', '/Users/james/Projects/arbitrage/crypto_download/cache')
-arb.compare_matching_symbols()
-arb.profitable_exchanges()
+# Arbitrage('BTC', 'USD', '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
+
+ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
+fsym_ref = ref_data['fsym']
+tsym_ref = ref_data['tsym']
+
+for fsym in fsym_ref:
+    for tsym in tsym_ref:
+        Arbitrage(fsym, tsym, '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
 
             
         
