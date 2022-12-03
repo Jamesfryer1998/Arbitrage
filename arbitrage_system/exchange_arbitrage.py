@@ -47,6 +47,7 @@ class Arbitrage:
 
     def profitable_exchanges(self):
         sorted_arbitrage = sorted(self.arbitrage, key=lambda k: k['close'])
+        print(sorted_arbitrage)
         selling = sorted_arbitrage[-1]
         buying = sorted_arbitrage[0]
 
@@ -59,7 +60,7 @@ class Arbitrage:
             for key, value in self.fees.items():
                 if selling['exchange'] == key:
                     selling_fee = value
-                elif buying['exchange'] == key:
+                if buying['exchange'] == key:
                     buying_fee = value
     
             all_fees = selling_fee + buying_fee
@@ -87,7 +88,7 @@ class Arbitrage:
                         print('already here')
                         pass
                     else:
-                        print('adding')
+                        print(f'Adding - {self.symbol}')
                         arbitrage_data.append(dict[0])
                         with open(self.arbitrage_file, "w+") as file:
                             json.dump(arbitrage_data, file, indent=2)
@@ -104,10 +105,17 @@ class Arbitrage:
 ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
 fsym_ref = ref_data['fsym']
 tsym_ref = ref_data['tsym']
+count = 0
 
 for fsym in fsym_ref:
     for tsym in tsym_ref:
         Arbitrage(fsym, tsym, '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
+        count += 1
+
+print(f'{count} arbitrage opportunities found.')
+
+# NOT ALL CRYPTOS DOWNLOADED SO EMPTY SORTED_ARBITRAGE FILE
+# ADD CONDITION IF FILE NOT FOUND THEN MOVE ON
 
             
         
