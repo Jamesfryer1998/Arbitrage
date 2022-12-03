@@ -69,7 +69,7 @@ class Arbitrage:
             if diff > all_fees:
                 if os.path.exists("/Users/james/Projects/arbitrage/arbitrage_system/arbitrage_opportunities.json") == False:
                     ########################### HERERERERE
-                    with open("sample.json", "w") as outfile: 
+                    with open("sample.json", "w") as outfile:
                         json.dump(dictionary, outfile) 
 
                 print(diff-all_fees)
