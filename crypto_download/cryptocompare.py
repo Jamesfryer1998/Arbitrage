@@ -47,6 +47,7 @@ class CryptoCompareAPI():
                 data = response.json()
 
                 if data['Response'] == 'Error':
+
                     # print('error', self.file_format)
                     
                     # self.error_count += 1
@@ -61,7 +62,7 @@ class CryptoCompareAPI():
                     print(f'    {self.file_format} downloaded.')
                 else:
                     pass
-        else:
+        elif self.check_crypto_save() == True:
             print(f'    {self.file_format} already downloaded.')
 
     def error_return(self):
@@ -71,8 +72,6 @@ class CryptoCompareAPI():
         self.remove_file()
         self.download_data()
         return
-
-
 
 
 # CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance').run_all()
