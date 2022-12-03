@@ -37,7 +37,9 @@
       "Coinbase"
     ],
 
-    "exchange_fees": [
-      {"Binance":0.2}
-    ]
+    "exchange_fees": {
+      "Binance":0.2,
+      "Kraken":0.4,
+      "Coinbase":1
+    }
   }
