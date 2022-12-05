@@ -73,5 +73,4 @@ class CryptoCompareAPI():
         self.download_data()
         return
 
-
 # CryptoCompareAPI('/Users/james/Projects/arbitrage/crypto_download/cache','BTC','USDT', 'Binance').run_all()

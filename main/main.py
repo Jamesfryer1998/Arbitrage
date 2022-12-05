@@ -23,16 +23,19 @@ def main():
     exchange_ref = ref_data['exchanges']
     count = 0
     
-    for exchange in exchange_ref:
-        for fsym in fsym_ref:
-            for tsym in tsym_ref:
-                try:
-                    t = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
-                    t.start()
-                    count += 1 
-                    time.sleep(0.01)
-                except Exception as error:
-                    raise Exception(error)
+    for i in range(0,3):
+        print(f'\nRUN {i+1}')
+        
+        for exchange in exchange_ref:
+            for fsym in fsym_ref:
+                for tsym in tsym_ref:
+                    try:
+                        t = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
+                        t.start()
+                        count += 1 
+                        time.sleep(0.01)
+                    except Exception as error:
+                        raise Exception(error)
 
     t2 = datetime.datetime.now()
     delta = t2 - t1

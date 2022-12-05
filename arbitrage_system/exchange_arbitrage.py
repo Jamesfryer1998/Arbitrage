@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import json
+import time
 from datetime import datetime
 sys.path.insert(0, '/Users/james/Projects/arbitrage')
 from useful_functions import load_json
@@ -14,14 +15,26 @@ class Arbitrage:
         # ADD IN FEES HERE, JUST A LIST OF FEES FROM EXCHANGES
         ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
         self.fees = ref_data['exchange_fees']
-        self.symbol = None
+        self.exchanges = ref_data['exchanges']
+        self.symbol = f'{self.fsym}-{self.tsym}'
         self.arbitrage = None
         self.arbitrage_file = '/Users/james/Projects/arbitrage/arbitrage_system/arbitrage_opportunities.json'
         
-    def compare_matching_symbols(self):
-        print('Comparing symbols across exchanges')
-        self.symbol = f'{self.fsym}-{self.tsym}'
+    def available_exchanges(self):
+        count = 0
+        files = os.listdir(self.cache_path)
 
+        for file in files:
+            for exchange in self.exchanges:
+                if re.search(f'{exchange}-{self.symbol}', file) != None:
+                    count += 1
+
+        if count >= 2 or count == len(self.exchanges):
+            return True
+        else: 
+            return False
+
+    def compare_matching_symbols(self):
         files = os.listdir(self.cache_path)
         exchange_files = []
 
@@ -29,6 +42,8 @@ class Arbitrage:
             search = re.search(f'{self.symbol}', file)
             if search != None:
                 exchange_files.append(file)
+            else:
+                pass
 
         self.arbitrage = []
 
@@ -37,7 +52,6 @@ class Arbitrage:
             exchange = string[0]
             json_data = load_json(f'{self.cache_path}/{_}')
             latest_timestamp = json_data['Data'][-1]['time']
-            # print(datetime.utcfromtimestamp(latest_timestamp).strftime('%Y-%m-%d %H:%M:%S'))
             latest_close = json_data['Data'][-1]['close']
             dict = {'exchange':exchange,
                     'symbol':self.symbol,
@@ -47,14 +61,10 @@ class Arbitrage:
 
     def profitable_exchanges(self):
         sorted_arbitrage = sorted(self.arbitrage, key=lambda k: k['close'])
-        print(sorted_arbitrage)
         selling = sorted_arbitrage[-1]
         buying = sorted_arbitrage[0]
 
         if buying['time'] == selling['time']:
-            print(f'Buy: {buying}')
-            print(f'Sell: {selling}')
-
             diff = selling['close'] - buying['close']
 
             for key, value in self.fees.items():
@@ -65,9 +75,6 @@ class Arbitrage:
     
             all_fees = selling_fee + buying_fee
             profit = diff - all_fees
-            print(f'diff: {diff}')
-            print(f'fees: {all_fees}')
-            print(profit)
 
             if profit > 1:
                 dict = [{'time':datetime.utcfromtimestamp(buying['time']).strftime('%Y-%m-%d'),
@@ -85,7 +92,6 @@ class Arbitrage:
                 else:
                     arbitrage_data = load_json(self.arbitrage_file)
                     if dict[0] in arbitrage_data:
-                        print('already here')
                         pass
                     else:
                         print(f'Adding - {self.symbol}')
@@ -97,29 +103,38 @@ class Arbitrage:
             print(f'Arbitrage time stamps dont match: {buying["time"]} / {selling["time"]}')
 
     def find_arbitrage(self):
-        self.compare_matching_symbols()
-        self.profitable_exchanges()
+        if self.available_exchanges() == True:
+            self.compare_matching_symbols()
+            self.profitable_exchanges()
 
 # Arbitrage('BTC', 'USD', '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
+def main():
+    cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
+    ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
+    fsym_ref = ref_data['fsym']
+    tsym_ref = ref_data['tsym']
+    count = 0
+    t1 = datetime.now()
+    print('Comparing symbols across exchanges')
 
-ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
-fsym_ref = ref_data['fsym']
-tsym_ref = ref_data['tsym']
-count = 0
+    if len(os.listdir(cache_path)) == 0:
+        print('No files present, please download.')
+    else:
+        for fsym in fsym_ref:
+            for tsym in tsym_ref:
+                Arbitrage(fsym, tsym, cache_path).find_arbitrage()
+                count += 1
 
-for fsym in fsym_ref:
-    for tsym in tsym_ref:
-        Arbitrage(fsym, tsym, '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
-        count += 1
+        t2 = datetime.now()
+        time.sleep(0.5)
 
-print(f'{count} arbitrage opportunities found.')
+        opportunities = len(load_json('/Users/james/Projects/arbitrage/arbitrage_system/arbitrage_opportunities.json'))
+        print(f'{opportunities} pottential arbitrages found out of {count}.')
+        print(f'{(opportunities/count)*100:.2f}% Success rate.')
+        print(f'Runtime: {t2-t1}')
+
+if __name__ == '__main__':
+    main()
 
 # NOT ALL CRYPTOS DOWNLOADED SO EMPTY SORTED_ARBITRAGE FILE
 # ADD CONDITION IF FILE NOT FOUND THEN MOVE ON
-
-            
-        
-
-        
-
-
