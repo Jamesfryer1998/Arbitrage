@@ -22,7 +22,7 @@
     "XMR",
     "XRP"
   ],
-  "downloaded": 187,
+  "downloaded": 300,
   "tsym": [
     "USD",
     "USDT",
@@ -40,6 +40,6 @@
     "Binance": 0.1,
     "Coinbase": 0.4,
     "Kraken": 0.2,
-    "KuCoin":0.1
+    "KuCoin": 0.1
   }
 }

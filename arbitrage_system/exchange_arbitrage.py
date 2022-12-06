@@ -117,14 +117,14 @@ class Arbitrage:
 
 # Arbitrage('BTC', 'USD', '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
 
-def main():
+def arbitrage_crypto_stable():
     cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
     fsym_ref = ref_data['fsym']
     tsym_ref = ref_data['tsym']
     count = 0
     t1 = datetime.now()
-    print('Comparing symbols across exchanges...')
+    print('Comparing crypto-stable symbols across exchanges...')
 
     if len(os.listdir(cache_path)) == 0:
         print('No files present, please download.')
@@ -142,5 +142,37 @@ def main():
         print(f'{(opportunities/count)*100:.2f}% Success rate.')
         print(f'Runtime: {t2-t1}')
 
+def arbitrage_crypto_crypto():
+    # THIS WILL NOT WORK, NEED TO FIGURE OUT EXCHANGE RATES
+    cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
+    ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
+    fsym_ref = ref_data['fsym']
+    tsym_ref = ref_data['tsym']
+    count = 0
+    t1 = datetime.now()
+    print('Comparing crypto-crypto symbols across exchanges...')
+
+    if len(os.listdir(cache_path)) == 0:
+        print('No files present, please download.')
+    else:
+        for fsym_1 in fsym_ref:
+            for fsym_2 in fsym_ref:
+                # print(f'{fsym_1}-{fsym_2}')
+                Arbitrage(fsym_1, fsym_2, cache_path).find_arbitrage()
+                count += 1
+
+        t2 = datetime.now()
+        time.sleep(0.5)
+        try:
+            opportunities = len(load_json('/Users/james/Projects/arbitrage/arbitrage_system/arbitrage_opportunities.json'))
+            print(f'{opportunities} pottential arbitrages found out of {count}.')
+            print(f'{(opportunities/count)*100:.2f}% Success rate.')
+            print(f'Runtime: {t2-t1}')
+        except:
+            print(f'{0} pottential arbitrages found out of {count}.')
+            print(f'{(0/count)*100:.2f}% Success rate.')
+            print(f'Runtime: {t2-t1}')
+
 if __name__ == '__main__':
-    main()
+    # arbitrage_crypto_stable()
+    arbitrage_crypto_crypto()
