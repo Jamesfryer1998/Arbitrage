@@ -1,6 +1,7 @@
 import datetime
 import threading
 import time
+import json
 import sys
 import os
 sys.path.insert(0, '/Users/james/Projects/arbitrage')
@@ -21,29 +22,40 @@ def main():
     fsym_ref = ref_data['fsym']
     tsym_ref = ref_data['tsym']
     exchange_ref = ref_data['exchanges']
-    count = 0
-    
-    for i in range(0,3):
-        print(f'\nRUN {i+1}')
-        
-        for exchange in exchange_ref:
-            for fsym in fsym_ref:
-                for tsym in tsym_ref:
-                    try:
-                        t = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
-                        t.start()
-                        count += 1 
-                        time.sleep(0.01)
-                    except Exception as error:
-                        raise Exception(error)
-
-    t2 = datetime.datetime.now()
-    delta = t2 - t1
-    time.sleep(1)
-    print('------------------------------------')
-    t2 = datetime.datetime.now()
     crypto_count = len(os.listdir(cache_path))
+    count = 0
 
-    print(f'Programme excected in {delta} - {crypto_count} cryptos processed.')
+    if ref_data['downloaded'] != crypto_count:
+    
+        for i in range(0,1):
+            print(f'\nRUN {i+1}')
+            
+            for exchange in exchange_ref:
+                for fsym in fsym_ref:
+                    for tsym in tsym_ref:
+                        try:
+                            t = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
+                            t.start()
+                            count += 1 
+                            time.sleep(0.01)
+                        except Exception as error:
+                            raise Exception(error)
+
+        t2 = datetime.datetime.now()
+        delta = t2 - t1
+        time.sleep(1)
+        print('------------------------------------')
+        
+        t2 = datetime.datetime.now()
+        ref_data['downloaded'] = crypto_count
+
+        with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
+            json.dump(ref_data, file, indent=2)
+
+        print(f'Programme excected in {delta} - {crypto_count} cryptos processed.')
+    else:
+        print('All available cryptos downloaded.')
+        pass
+
 
 main()

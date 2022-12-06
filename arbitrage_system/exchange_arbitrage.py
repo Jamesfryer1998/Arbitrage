@@ -107,7 +107,6 @@ class Arbitrage:
             self.compare_matching_symbols()
             self.profitable_exchanges()
 
-# Arbitrage('BTC', 'USD', '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
 def main():
     cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
@@ -135,6 +134,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# NOT ALL CRYPTOS DOWNLOADED SO EMPTY SORTED_ARBITRAGE FILE
-# ADD CONDITION IF FILE NOT FOUND THEN MOVE ON

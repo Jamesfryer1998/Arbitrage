@@ -23,10 +23,11 @@ class CryptoCompareAPI():
 
     def check_crypto_save(self):
         self.file_format = f'{self.exchange}-{self.fsym}-{self.tsym}-{self.date}.json'
-        if os.path.isfile(f'{self.cache_path}/{self.file_format}') != True:
-            return False
-        else:
-            return True
+        return os.path.isfile(f'{self.cache_path}/{self.file_format}')
+        # if os.path.isfile(f'{self.cache_path}/{self.file_format}') != True:
+        #     return False
+        # else:
+        #     return True
 
     def remove_file(self):
         time = datetime.datetime.now()
@@ -38,7 +39,8 @@ class CryptoCompareAPI():
                 print(f'    {file} removed')
 
     def download_data(self):
-        if self.check_crypto_save() == False:
+        if self.check_crypto_save() is not True:
+            print('here')
             url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={self.fsym}&tsym={self.tsym}&limit=100&e={self.exchange}&api_key={self.api_key}'
             response = requests.get(url)
             if response.status_code != 200:

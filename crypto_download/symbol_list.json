@@ -1,45 +1,43 @@
 {
-    "fsym": [
-      "ADA",
-      "ATOM",
-      "AVAX",
-      "BNB",
-      "BTC",
-      "DOGE",
-      "ETH",
-      "FLOW",
-      "FTT",
-      "FTX",
-      "LINK",
-      "LTC",
-      "LUNC",
-      "MANA",
-      "MATIC",
-      "SHIB",
-      "SOL",
-      "TRX",
-      "XLM",
-      "XMR",
-      "XRP"
-    ],
-
-    "tsym": [
-      "USD",
-      "USDT",
-      "BUSD",
-      "USDC",
-      "GBP"
-    ],
-
-    "exchanges": [
-      "Binance",
-      "Kraken",
-      "Coinbase"
-    ],
-
-    "exchange_fees": {
-      "Binance":0.2,
-      "Kraken":0.4,
-      "Coinbase":1
-    }
+  "fsym": [
+    "ADA",
+    "ATOM",
+    "AVAX",
+    "BNB",
+    "BTC",
+    "DOGE",
+    "ETH",
+    "FLOW",
+    "FTT",
+    "FTX",
+    "LINK",
+    "LTC",
+    "LUNC",
+    "MANA",
+    "MATIC",
+    "SHIB",
+    "SOL",
+    "TRX",
+    "XLM",
+    "XMR",
+    "XRP"
+  ],
+  "downloaded": 152,
+  "tsym": [
+    "USD",
+    "USDT",
+    "BUSD",
+    "USDC",
+    "GBP"
+  ],
+  "exchanges": [
+    "Binance",
+    "Kraken",
+    "Coinbase"
+  ],
+  "exchange_fees": {
+    "Binance": 0.2,
+    "Kraken": 0.4,
+    "Coinbase": 1
   }
+}
