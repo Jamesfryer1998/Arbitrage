@@ -114,7 +114,7 @@ def main():
     tsym_ref = ref_data['tsym']
     count = 0
     t1 = datetime.now()
-    print('Comparing symbols across exchanges')
+    print('Comparing symbols across exchanges...')
 
     if len(os.listdir(cache_path)) == 0:
         print('No files present, please download.')

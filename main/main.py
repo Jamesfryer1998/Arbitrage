@@ -45,8 +45,6 @@ def main():
         delta = t2 - t1
         time.sleep(1)
         print('------------------------------------')
-        
-        t2 = datetime.datetime.now()
         ref_data['downloaded'] = crypto_count
 
         with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
@@ -56,6 +54,5 @@ def main():
     else:
         print('All available cryptos downloaded.')
         pass
-
 
 main()
