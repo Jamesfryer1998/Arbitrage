@@ -22,7 +22,7 @@
     "XMR",
     "XRP"
   ],
-  "downloaded": 152,
+  "downloaded": 187,
   "tsym": [
     "USD",
     "USDT",
@@ -32,12 +32,14 @@
   ],
   "exchanges": [
     "Binance",
+    "Coinbase",
     "Kraken",
-    "Coinbase"
+    "KuCoin"
   ],
   "exchange_fees": {
-    "Binance": 0.2,
-    "Kraken": 0.4,
-    "Coinbase": 1
+    "Binance": 0.1,
+    "Coinbase": 0.4,
+    "Kraken": 0.2,
+    "KuCoin":0.1
   }
 }

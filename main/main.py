@@ -27,7 +27,7 @@ def main():
 
     if ref_data['downloaded'] != crypto_count:
     
-        for i in range(0,1):
+        for i in range(0,2):
             print(f'\nRUN {i+1}')
             
             for exchange in exchange_ref:

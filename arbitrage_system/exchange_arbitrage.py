@@ -69,12 +69,18 @@ class Arbitrage:
 
             for key, value in self.fees.items():
                 if selling['exchange'] == key:
-                    selling_fee = value
+                    selling_fee = (value / 100) * selling['close']
                 if buying['exchange'] == key:
-                    buying_fee = value
+                    buying_fee = (value / 100) * buying['close']
     
+            # May need to amend this to encorporate
+            # - selling fees
+            # - buying fees 
+            # - for each exchange
             all_fees = selling_fee + buying_fee
             profit = diff - all_fees
+
+            # Amount to buy (INVESTMENT)
 
             if profit > 1:
                 dict = [{'time':datetime.utcfromtimestamp(buying['time']).strftime('%Y-%m-%d'),
@@ -83,6 +89,8 @@ class Arbitrage:
                         'symbol':self.symbol,
                         'buying_close':buying['close'],
                         'selling_close':selling['close'],
+                        'fees':all_fees,
+                        'difference':diff,
                         'profit':diff - all_fees
                         }]
 
@@ -106,6 +114,8 @@ class Arbitrage:
         if self.available_exchanges() == True:
             self.compare_matching_symbols()
             self.profitable_exchanges()
+
+# Arbitrage('BTC', 'USD', '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
 
 def main():
     cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
