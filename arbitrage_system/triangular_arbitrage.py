@@ -53,72 +53,74 @@ class TriangularArbitrage:
         print(f'{len(self.combinations)} Triangual Arbitrations Combinations found.')
         print(f'TTR: {t2-t1}')
 
-    def get_crypto_data(self, exchange, crypto_symbol):
+    def get_crypto_data(self, crypto_symbol, sort_type=None):
         files = os.listdir(self.cache_path)
         crypto_symbol_split = crypto_symbol.split('-')
         crypto_symbol_reverse = f'{crypto_symbol_split[1]}-{crypto_symbol_split[0]}'
 
-        for file in files:
-            # Normal symbol
-            if re.search(f'{exchange}-{crypto_symbol}', file) != None:
-                data = load_json(f'{self.cache_path}/{file}')
-                return data['Data'][-1]['close']
-            
-            # Reversed symbol
-            elif re.search(f'{exchange}-{crypto_symbol_reverse}', file) != None:
-                print(file)
-                data = load_json(f'{self.cache_path}/{file}')
-                return data['Data'][-1]['close']
-    
-    # def find_triangular_arbitrage_opportunities_1(self):
+        exchange_prices = []
+        for exchange in self.exchanges:
+            for file in files:
+                # Normal symbol
+                if re.search(f'{exchange}-{crypto_symbol}', file) != None:
+                    data = load_json(f'{self.cache_path}/{file}')
+                    exchange_prices.append({'exchange':exchange,
+                                            'rate':data['Data'][-1]['close']})
 
-    #     # self.get_crypto_data('Binance', 'BNB-ADA')
-    #     successful = []
-    #     for exchange in self.exchanges:
-    #         first_exchange = [][0]
-    #         best_exchange = []
+                # Reversed symbol
+                elif re.search(f'{exchange}-{crypto_symbol_reverse}', file) != None:
+                    data = load_json(f'{self.cache_path}/{file}')
+                    exchange_prices.append({'exchange':exchange,
+                                            'rate':data['Data'][-1]['close']})
+        
+        if len(exchange_prices) == 0:
+            return None
+        elif sort_type == True:
+            return exchange_prices[0]
+        elif sort_type == None:
+            sort_by_value = sorted(exchange_prices, key=lambda i: i['rate'])
+            return sort_by_value[0]
 
-    #         for combination in self.combinations:
-    #             point_1 = combination[0]
-    #             point_2 = combination[1]
-    #             point_3 = combination[2]
 
-    #             point_1_close = self.get_crypto_data(exchange, point_1)
-    #             point_2_close = self.get_crypto_data(exchange, point_2)
-    #             point_3_close = self.get_crypto_data(exchange, point_3)
+    def find_triangular_arbitrage_opportunities_2(self):
+        triangular_completion = []
 
-    #             if point_1_close != None and point_2_close != None and point_3_close != None:
-    #                 dict = {
-    #                     'base':{
-    #                         'exchange':exchange,
-    #                         'symbol':point_1,
-    #                         'exchange_rate':point_1_close
-    #                     },
-    #                     'inter':{
-    #                         'exchange':exchange,
-    #                         'symbol':point_2,
-    #                         'exchange_rate':point_2_close
-    #                     },
-    #                     'end':{
-    #                         'exchange':exchange,
-    #                         'symbol': point_3,
-    #                         'exchange_rate':point_3_close
-    #                     }}
-    #                 successful.append(dict)
+        for combination in self.combinations:
+            point_1 = self.get_crypto_data(combination[0])
+            point_2 = self.get_crypto_data(combination[1])
+            point_3 = self.get_crypto_data(combination[2])
 
-    #     print(len(successful))
-    #     print(successful[:10])
 
-    def find_triangular_arbitrage_opportunities_2(self)
-        return 
+            # INCORPORATE FEES
+            if point_1 != None and point_2 != None and point_3 != None:
+                investment_amount = self.investment
+                current_price_1 = point_1.get('rate')
+                final_investment = 0
+                price_info = {}
 
+                buy_quantity_1 = investment_amount / current_price_1
+                investment_amount_2 = buy_quantity_1
+                current_price_2 = point_2.get('rate')
+
+                buy_quantity_2 = investment_amount_2 / current_price_2
+                investment_amount_3 = buy_quantity_2
+                current_price_3 = point_3.get('rate')
+
+                sell_quantity_3 = investment_amount_3
+                final_investment = round(sell_quantity_3 * current_price_3)
+                price_info = {
+                    f'{point_1.get("exchange")}-{combination[0]}':current_price_1,
+                    f'{point_2.get("exchange")}-{combination[1]}':current_price_2,
+                    f'{point_3.get("exchange")}-{combination[2]}':current_price_3,
+                    'final_investment':final_investment
+                }
+
+                if final_investment > investment_amount and final_investment < investment_amount+2000:
+                    print(price_info)
 
     def find_triangular_arbitrage_opprotunities(self):
         # self.get_all_crypto_combinations()
         self.get_stable_crypto_combinations()
         self.find_triangular_arbitrage_opportunities_2()
 
-time = datetime.now()
-TriangularArbitrage(1000).find_triangular_arbitrage_opprotunities()
-
-# print(load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')['fsym'])
+TriangularArbitrage(8000).find_triangular_arbitrage_opprotunities()

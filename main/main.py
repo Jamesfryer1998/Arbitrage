@@ -72,7 +72,7 @@ def crypto_to_crypto():
                     t = threading.Thread(target=worker, args=[cache_path, fsym_1, fsym_2, exchange])
                     t.start()
                     count += 1 
-                    time.sleep(0.001)
+                    time.sleep(0.01)
                 except Exception as error:
                     raise Exception(error)
 
@@ -90,7 +90,7 @@ def crypto_to_crypto():
     #     print('All available cryptos downloaded.')
     #     pass
 
-crypto_to_stable_coin()
+# crypto_to_stable_coin()
 # crypto_to_crypto()
 
 # TODO
