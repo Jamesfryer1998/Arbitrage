@@ -174,5 +174,5 @@ def arbitrage_crypto_crypto():
             print(f'Runtime: {t2-t1}')
 
 if __name__ == '__main__':
-    # arbitrage_crypto_stable()
+    arbitrage_crypto_stable()
     arbitrage_crypto_crypto()
