@@ -23,6 +23,8 @@ for file in files:
         if count > 1:
             break
 print(count)
+
+l = ['']
     
     # if count >= 2 and count <= len(exchanges):
     #     print('working')
