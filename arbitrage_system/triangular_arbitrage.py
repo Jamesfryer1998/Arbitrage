@@ -83,6 +83,7 @@ class TriangularArbitrage:
 
 
     def find_triangular_arbitrage_opportunities_2(self):
+        # opportunities to a file
         triangular_completion = []
 
         for combination in self.combinations:
@@ -118,9 +119,9 @@ class TriangularArbitrage:
                 if final_investment > investment_amount and final_investment < investment_amount+2000:
                     print(price_info)
 
-    def find_triangular_arbitrage_opprotunities(self):
+    def run_triangular_arbitrage(self):
         # self.get_all_crypto_combinations()
         self.get_stable_crypto_combinations()
         self.find_triangular_arbitrage_opportunities_2()
 
-TriangularArbitrage(8000).find_triangular_arbitrage_opprotunities()
+TriangularArbitrage(8000).run_triangular_arbitrage()
