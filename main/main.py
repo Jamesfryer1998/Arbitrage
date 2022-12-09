@@ -15,83 +15,98 @@ def worker(cache_path, fsym, tsym, exchange):
     CryptoCompareAPI(cache_path, fsym, tsym, exchange).run_all()
 
 def crypto_to_stable_coin():
-    t1 = datetime.datetime.now()
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
-    fsym_ref = ref_data['fsym']
-    tsym_ref = ref_data['tsym']
-    exchange_ref = ref_data['exchanges']
-    crypto_count = len(os.listdir(cache_path))
     count = 0
 
-    if ref_data['downloaded'] != crypto_count:
+    CryptoCompareAPI(cache_path).find_available_cryptos_stable_data()
+    runs = []
+
+    for i in range(0, 4):
+        t1 = datetime.datetime.now()
         jobs = []
-        for exchange in exchange_ref:
-            for fsym in fsym_ref:
-                for tsym in tsym_ref:
-                    try:
-                        thread = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
-                        jobs.append(thread)
-                        count += 1
-                    except Exception as error:
-                        raise Exception(error)
+        for data in ref_data['available_crypto_stable']:
+            symbol_split = data.split('-')
+            try:
+                thread = threading.Thread(target=worker, args=[cache_path, symbol_split[1], symbol_split[2], symbol_split[0]])
+                jobs.append(thread)
+                count += 1
+            except Exception as error:
+                raise Exception(error)
 
         for t in jobs:
             t.start()
-            time.sleep(0.01)
 
         for t in jobs:
             t.join()
         
-        t2 = datetime.datetime.now()
-        delta = t2 - t1
+        delta = datetime.datetime.now() - t1
         time.sleep(1)
 
-        # ref_data['downloaded'] = crypto_count
-        # print(available_cryptos)
-
+        crypto_count = len(os.listdir(cache_path))
+        expected = len(ref_data['available_crypto_stable'])
         with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
             json.dump(ref_data, file, indent=2)
 
-        print('------------------------------------')
-        print(f'Programme excected in {delta} - {crypto_count} cryptos processed.')
-    else:
-        print('All available cryptos-stable downloaded.')
-        pass
+        
+        run = [f'RUN {i+1}', f'{crypto_count} out of {expected} downloaded.', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
+        runs.append(run)
+        # print(f'{expected} out of {crypto_count} downloaded.')
+        # print(f'Programme executed in {delta} - {crypto_count} cryptos processed.')
+    
+    # else:
+    #     print('     Cryptos already downloaded.')
 
+    print('CRYPTO-STABLE')
+    for run in runs:
+        print(run)
+
+    print('------------------------------------')
+    
 def crypto_to_crypto():
-    t1 = datetime.datetime.now()
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
-    fsym_ref = ref_data['fsym']
-    # tsym_ref = ref_data['tsym']
-    exchange_ref = ref_data['exchanges']
-    crypto_count = len(os.listdir(cache_path))
     count = 0
 
-    # if ref_data['downloaded'] != crypto_count:
-    for exchange in exchange_ref:
-        for fsym_1 in fsym_ref:
-            for fsym_2 in fsym_ref:
-                try:
-                    t = threading.Thread(target=worker, args=[cache_path, fsym_1, fsym_2, exchange])
-                    t.start()
-                    count += 1 
-                    time.sleep(0.01)
-                except Exception as error:
-                    raise Exception(error)
-
-    t2 = datetime.datetime.now()
-    delta = t2 - t1
-    time.sleep(1)
+    CryptoCompareAPI(cache_path).find_available_cryptos_stable_data()
+    runs = []
     print('------------------------------------')
-    ref_data['downloaded'] = crypto_count
+    for i in range(0, 4):
+        t1 = datetime.datetime.now()
+        jobs = []
+        for data in ref_data['available_crypto_stable']:
+            symbol_split = data.split('-')
+            try:
+                thread = threading.Thread(target=worker, args=[cache_path, symbol_split[1], symbol_split[2], symbol_split[0]])
+                jobs.append(thread)
+                count += 1
+            except Exception as error:
+                raise Exception(error)
 
-    with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
-        json.dump(ref_data, file, indent=2)
+        for t in jobs:
+            t.start()
 
-    print(f'Programme excected in {delta} - {crypto_count} cryptos processed.')
-    # else:
-    #     print('All available cryptos downloaded.')
-    #     pass
+        for t in jobs:
+            t.join()
+        
+        delta = datetime.datetime.now() - t1
+        time.sleep(1)
+
+        crypto_count = len(os.listdir(cache_path))
+        expected = len(ref_data['available_crypto_stable'])
+        with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
+            json.dump(ref_data, file, indent=2)
+
+        run = [f'RUN {i+1}', f'{crypto_count} out of {expected} downloaded.', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
+        runs.append(run)
+    else:
+        print('     Cryptos already downloaded.')
+        
+
+    print('CRYPTO-STABLE')
+    for run in runs:
+        print(run)
+
+    print('------------------------------------')
+    
 
 crypto_to_stable_coin()
 # crypto_to_crypto()
