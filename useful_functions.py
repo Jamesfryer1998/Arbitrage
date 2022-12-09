@@ -4,7 +4,7 @@ import os
 import re
 
 def load_json(path):
-    with open(path) as f:
+    with open(path, 'r') as f:
         data = json.load(f)
         return data
 

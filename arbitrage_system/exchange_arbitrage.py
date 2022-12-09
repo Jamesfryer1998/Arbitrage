@@ -115,8 +115,6 @@ class Arbitrage:
             self.compare_matching_symbols()
             self.profitable_exchanges()
 
-# Arbitrage('BTC', 'USD', '/Users/james/Projects/arbitrage/crypto_download/cache').find_arbitrage()
-
 def arbitrage_crypto_stable():
     cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')

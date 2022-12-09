@@ -22,7 +22,6 @@
     "XMR",
     "XRP"
   ],
-  "downloaded": 294,
   "tsym": [
     "USD",
     "USDT",
@@ -30,6 +29,12 @@
     "USDC",
     "GBP"
   ],
+  "available_crypto": [
+    "Binance-BTC-USDC",
+    "Binance-ETH-USDC",
+    "Binance-ETH-BTC"
+  ],
+  "downloaded": 160,
   "exchanges": [
     "Binance",
     "Coinbase",

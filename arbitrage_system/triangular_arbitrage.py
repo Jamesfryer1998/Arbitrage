@@ -14,6 +14,7 @@ class TriangularArbitrage:
         self.fsym = ref_data['fsym']
         self.tsym = ref_data['tsym']
         self.exchanges = ref_data['exchanges']
+        self.fees = ref_data['exchange_fees']
         self.combinations = None
 
     def get_all_crypto_combinations(self):
@@ -90,7 +91,6 @@ class TriangularArbitrage:
             point_1 = self.get_crypto_data(combination[0])
             point_2 = self.get_crypto_data(combination[1])
             point_3 = self.get_crypto_data(combination[2])
-
 
             # INCORPORATE FEES
             if point_1 != None and point_2 != None and point_3 != None:
