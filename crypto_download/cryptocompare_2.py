@@ -22,7 +22,7 @@ class CryptoCompareAPI():
         self.ref_data = ref_data
         time = datetime.datetime.now()
         self.date = time.date()
-        self.file_format = None
+        self.file_format = f'{self.exchange}-{self.fsym}-{self.tsym}-{self.date}.json'
         self.symbol_format = None
     
     def send_email(self):
@@ -34,18 +34,12 @@ class CryptoCompareAPI():
                 contents='Yay!')
     
     def update_counts(self):
-        # fsym_count = len(self.ref_data['fsym'])
         self.ref_data['fsym_count'] = len(self.ref_data['fsym'])
         self.ref_data['tsym_count'] = len(self.ref_data['tsym'])
         self.ref_data['exchange_count'] = len(self.ref_data['exchanges'])
 
         with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
             json.dump(self.ref_data, file, indent=2)
-
-        # tsym_count = len(self.ref_data['tsym'])
-
-        # exchange_count = len(self.ref_data['exchanges'])
-
 
     def find_available_cryptos_stable_data(self):
         num_fsym = len(self.ref_data['fsym'])
@@ -81,6 +75,18 @@ class CryptoCompareAPI():
                                     print(f'    {symbol_format} added.')
                                     with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
                                         json.dump(self.ref_data, file, indent=2)
+
+                                    # if not os.path.isfile(f'{self.cache_path}/{self.file_format}'):
+                                    #         file_format = f'{exchange}-{fsym}-{tsym}-{self.date}.json'
+                                    #         with open(f'{self.cache_path}/{file_format}', 'w') as f:
+                                    #             json.dump(data, f, indent=4)
+                                    #         print(f'    {file_format} downloaded.')
+
+                                else:
+                                        print(f'{symbol_format} not available.')
+
+                        else:
+                            print(f'{symbol_format} present.')
             
             time.sleep(1)
             self.send_email()
@@ -99,28 +105,48 @@ class CryptoCompareAPI():
                     for fsym_2 in self.ref_data['fsym']:
                         symbol_format = f'{exchange}-{fsym_1}-{fsym_2}'
                         if symbol_format not in self.ref_data['available_crypto_crypto']:
-                            url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym_1}&tsym={fsym_2}&limit=100&e={exchange}&api_key={self.api_key}'
-                            response = requests.get(url)
-                            if response.status_code != 200:
-                                    raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
-                            else:
-                                data = response.json()
+                            url_forward = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym_1}&tsym={fsym_2}&limit=100&e={exchange}&api_key={self.api_key}'
+                            url_reverse = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym_2}&tsym={fsym_1}&limit=100&e={exchange}&api_key={self.api_key}'
+                            urls = [url_forward, url_reverse]
+                            for url in urls:
+                                response = requests.get(url)
+                                if response.status_code != 200:
+                                        raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
+                                else:
+                                    data = response.json()
 
-                                if data['Response'] == 'Error':
-                                    pass
-                                
-                                data = data['Data']
-                                
-                                if len(data) != 0 and data['Data'][0]['volumefrom'] != 0 and data['Data'][0]['volumeto'] != 0:
-                                    self.ref_data['available_crypto_crypto'].append(symbol_format)
-                                    crypto_count = self.ref_data['crypto_crypto_count']
-                                    self.ref_data['crypto_crypto_count'] = crypto_count + 1
-                                    self.update_counts()
-                                    print(f'    {symbol_format} added.')
-                                    with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
-                                        json.dump(self.ref_data, file, indent=2)
+                                    if data['Response'] == 'Error':
+                                        pass
+                                    
+                                    data = data['Data']
+                                    
+                                    if len(data) != 0 and data['Data'][0]['volumefrom'] != 0 and data['Data'][0]['volumeto'] != 0:
+                                        # if symbol_format not in self.ref_data['available_crypto_crypto']:
+                                        self.ref_data['available_crypto_crypto'].append(symbol_format)
+                                        crypto_count = self.ref_data['crypto_crypto_count']
+                                        self.ref_data['crypto_crypto_count'] = crypto_count + 1
+                                        self.update_counts()
+                                        print(f'    {symbol_format} added.')
+                                        with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
+                                            json.dump(self.ref_data, file, indent=2)
+
+                                        # if not os.path.isfile(f'{self.cache_path}/{self.file_format}'):
+                                        #     file_format = f'{exchange}-{fsym_1}-{fsym_2}-{self.date}.json'
+                                        #     with open(f'{self.cache_path}/{self.file_format}', 'w') as f:
+                                        #         json.dump(data, f, indent=4)
+                                        #     print(f'    {file_format} downloaded.')
+
+                                # ADD SYMBOLS TO A LIST AND ADD TO REF_FILE ALL AT ONCE
+
+                                    else:
+                                        print(f'{symbol_format} not available.')
+
+                        else:
+                            print(f'{symbol_format} present.')
+                                            
         
             time.sleep(1)
+            self.send_email()
         else:
             print('     All available crypto-crypto pairs found...')
 
@@ -133,7 +159,7 @@ class CryptoCompareAPI():
                 print(f'    {file} removed')
     
     def download_data(self):
-        self.file_format = f'{self.exchange}-{self.fsym}-{self.tsym}-{self.date}.json'
+        # self.file_format = f'{self.exchange}-{self.fsym}-{self.tsym}-{self.date}.json'
         symbol_format = f'{self.exchange}-{self.fsym}-{self.tsym}'
         if not os.path.isfile(f'{self.cache_path}/{self.file_format}'):
             self.remove_file()

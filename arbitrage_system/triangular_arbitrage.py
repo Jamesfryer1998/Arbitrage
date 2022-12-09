@@ -84,7 +84,7 @@ class TriangularArbitrage:
 
 
     def find_triangular_arbitrage_opportunities_2(self):
-        # opportunities to a file
+        # output opportunities to a file
         triangular_completion = []
 
         for combination in self.combinations:

@@ -47,8 +47,7 @@ def crypto_to_stable_coin():
         with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
             json.dump(ref_data, file, indent=2)
 
-        
-        run = [f'RUN {i+1}', f'{crypto_count} out of {expected} downloaded.', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
+        run = [f'RUN {i+1}', f'{crypto_count}', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
         runs.append(run)
     
     # else:
@@ -89,23 +88,21 @@ def crypto_to_crypto():
         time.sleep(1)
 
         crypto_count = len(os.listdir(cache_path))
-        expected = len(ref_data['available_crypto_crypto'])
-        with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
-            json.dump(ref_data, file, indent=2)
+        # expected = len(ref_data['available_crypto_crypto'])
+        # with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
+        #     json.dump(ref_data, file, indent=2)
 
-        run = [f'RUN {i+1}', f'{crypto_count} out of {expected} downloaded.', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
+        run = [f'RUN {i+1}', f'{crypto_count} downloaded.', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
         runs.append(run)
     else:
         print('     Cryptos already downloaded.')
         
-
     print('CRYPTO-CRYPTO')
     for run in runs:
         print(run)
 
     print('------------------------------------')
     
-
 crypto_to_stable_coin()
 crypto_to_crypto()
 
