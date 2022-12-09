@@ -14,7 +14,6 @@ cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
 def worker(cache_path, fsym, tsym, exchange):
     CryptoCompareAPI(cache_path, fsym, tsym, exchange).run_all()
 
-
 def crypto_to_stable_coin():
     t1 = datetime.datetime.now()
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
@@ -23,7 +22,7 @@ def crypto_to_stable_coin():
     exchange_ref = ref_data['exchanges']
     crypto_count = len(os.listdir(cache_path))
     count = 0
-    
+
     if ref_data['downloaded'] != crypto_count:
         jobs = []
         for exchange in exchange_ref:
@@ -32,13 +31,13 @@ def crypto_to_stable_coin():
                     try:
                         thread = threading.Thread(target=worker, args=[cache_path, fsym, tsym, exchange])
                         jobs.append(thread)
-                        # available_cryptos.append(symbol_format)
                         count += 1
                     except Exception as error:
                         raise Exception(error)
 
         for t in jobs:
             t.start()
+            time.sleep(0.01)
 
         for t in jobs:
             t.join()

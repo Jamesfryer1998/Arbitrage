@@ -30,10 +30,9 @@
     "GBP"
   ],
   "available_crypto": [
-    "Binance-BTC-USDC",
-    "Binance-ETH-USDC",
-    "Binance-ETH-BTC"
+    "Binance-ADA-ETH"
   ],
+  "crypto_count": 1,
   "downloaded": 160,
   "exchanges": [
     "Binance",
