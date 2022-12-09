@@ -7,6 +7,7 @@ import requests
 sys.path.insert(0, '/Users/james/Projects/arbitrage')
 from useful_functions import load_json
 import datetime
+import yagmail
 
 class CryptoCompareAPI():
     def __init__(self, cache_path, fsym=None, tsym=None, exchange=None):
@@ -23,6 +24,14 @@ class CryptoCompareAPI():
         self.date = time.date()
         self.file_format = None
         self.symbol_format = None
+    
+    def send_email(self):
+        user = yagmail.SMTP(user='pythonemail1998@gmail.com', password='fhnlzjjestolmfgh')
+
+        #Body of email
+        user.send(to=('pythonemail1998@gmail.com')
+                ,subject =f'Symbol Update Complete',
+                contents='Yay!')
     
     def update_counts(self):
         # fsym_count = len(self.ref_data['fsym'])
@@ -51,30 +60,30 @@ class CryptoCompareAPI():
                 for fsym in self.ref_data['fsym']:
                     for tsym in self.ref_data['tsym']:
                         symbol_format = f'{exchange}-{fsym}-{tsym}'
+                        if symbol_format not in self.ref_data['available_crypto_stable']:
+                            url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym}&tsym={tsym}&limit=100&e={exchange}&api_key={self.api_key}'
+                            response = requests.get(url)
+                            if response.status_code != 200:
+                                    raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
+                            else:
+                                data = response.json()
 
-                        url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym}&tsym={tsym}&limit=100&e={exchange}&api_key={self.api_key}'
-                        response = requests.get(url)
-                        if response.status_code != 200:
-                                raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
-                        else:
-                            data = response.json()
-
-                            if data['Response'] == 'Error':
-                                pass
-                            
-                            data = data['Data']
-                            
-                            if len(data) != 0 and data['Data'][0]['volumefrom'] != 0 and data['Data'][0]['volumeto'] != 0:
-                                if symbol_format not in self.ref_data['available_crypto_stable']:
+                                if data['Response'] == 'Error':
+                                    pass
+                                
+                                data = data['Data']
+                                
+                                if len(data) != 0 and data['Data'][0]['volumefrom'] != 0 and data['Data'][0]['volumeto'] != 0:
                                     self.ref_data['available_crypto_stable'].append(symbol_format)
-                                    crypto_count = self.ref_data['crypto_count']
-                                    self.ref_data['crypto_count'] = crypto_count + 1
+                                    crypto_count = self.ref_data['stable_crypto_count']
+                                    self.ref_data['stable_crypto_count'] = crypto_count + 1
                                     self.update_counts()
                                     print(f'    {symbol_format} added.')
                                     with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
                                         json.dump(self.ref_data, file, indent=2)
             
             time.sleep(1)
+            self.send_email()
         else:
             print('     All available crypto-stable pairs found...')
 
@@ -87,34 +96,33 @@ class CryptoCompareAPI():
         if num_fsym != fsym_count or num_exchange != exchange_count:
             for exchange in self.ref_data['exchanges']:
                 for fsym_1 in self.ref_data['fsym']:
-                    for fsym_2 in self.ref_data['tsym']:
+                    for fsym_2 in self.ref_data['fsym']:
                         symbol_format = f'{exchange}-{fsym_1}-{fsym_2}'
+                        if symbol_format not in self.ref_data['available_crypto_crypto']:
+                            url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym_1}&tsym={fsym_2}&limit=100&e={exchange}&api_key={self.api_key}'
+                            response = requests.get(url)
+                            if response.status_code != 200:
+                                    raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
+                            else:
+                                data = response.json()
 
-                        url = f'https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym_1}&tsym={fsym_2}&limit=100&e={exchange}&api_key={self.api_key}'
-                        response = requests.get(url)
-                        if response.status_code != 200:
-                                raise Exception(f"Failed to load reference data [{response.status_code}/{response.reason}]")
-                        else:
-                            data = response.json()
-
-                            if data['Response'] == 'Error':
-                                pass
-                            
-                            data = data['Data']
-                            
-                            if len(data) != 0 and data['Data'][0]['volumefrom'] != 0 and data['Data'][0]['volumeto'] != 0:
-                                if symbol_format not in self.ref_data['available_crypto_stable']:
-                                    self.ref_data['available_crypto_stable'].append(symbol_format)
-                                    crypto_count = self.ref_data['crypto_count']
-                                    self.ref_data['crypto_count'] = crypto_count + 1
+                                if data['Response'] == 'Error':
+                                    pass
+                                
+                                data = data['Data']
+                                
+                                if len(data) != 0 and data['Data'][0]['volumefrom'] != 0 and data['Data'][0]['volumeto'] != 0:
+                                    self.ref_data['available_crypto_crypto'].append(symbol_format)
+                                    crypto_count = self.ref_data['crypto_crypto_count']
+                                    self.ref_data['crypto_crypto_count'] = crypto_count + 1
                                     self.update_counts()
                                     print(f'    {symbol_format} added.')
                                     with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
                                         json.dump(self.ref_data, file, indent=2)
-            
+        
             time.sleep(1)
         else:
-            print('     All available crypto-stable pairs found...')
+            print('     All available crypto-crypto pairs found...')
 
     def remove_file(self):
         files = os.listdir(self.cache_path)
@@ -154,3 +162,7 @@ class CryptoCompareAPI():
             
     def run_all(self):
         self.download_data()
+
+# cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
+
+# CryptoCompareAPI(cache_path).send_email()

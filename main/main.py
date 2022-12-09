@@ -50,8 +50,6 @@ def crypto_to_stable_coin():
         
         run = [f'RUN {i+1}', f'{crypto_count} out of {expected} downloaded.', f'Programme executed in {delta} - {crypto_count} cryptos processed.']
         runs.append(run)
-        # print(f'{expected} out of {crypto_count} downloaded.')
-        # print(f'Programme executed in {delta} - {crypto_count} cryptos processed.')
     
     # else:
     #     print('     Cryptos already downloaded.')
@@ -66,13 +64,13 @@ def crypto_to_crypto():
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
     count = 0
 
-    CryptoCompareAPI(cache_path).find_available_cryptos_stable_data()
+    CryptoCompareAPI(cache_path).find_available_crypto_crypto_data()
     runs = []
     print('------------------------------------')
     for i in range(0, 4):
         t1 = datetime.datetime.now()
         jobs = []
-        for data in ref_data['available_crypto_stable']:
+        for data in ref_data['available_crypto_crypto']:
             symbol_split = data.split('-')
             try:
                 thread = threading.Thread(target=worker, args=[cache_path, symbol_split[1], symbol_split[2], symbol_split[0]])
@@ -91,7 +89,7 @@ def crypto_to_crypto():
         time.sleep(1)
 
         crypto_count = len(os.listdir(cache_path))
-        expected = len(ref_data['available_crypto_stable'])
+        expected = len(ref_data['available_crypto_crypto'])
         with open('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json', 'w') as file:
             json.dump(ref_data, file, indent=2)
 
@@ -101,7 +99,7 @@ def crypto_to_crypto():
         print('     Cryptos already downloaded.')
         
 
-    print('CRYPTO-STABLE')
+    print('CRYPTO-CRYPTO')
     for run in runs:
         print(run)
 
@@ -109,7 +107,7 @@ def crypto_to_crypto():
     
 
 crypto_to_stable_coin()
-# crypto_to_crypto()
+crypto_to_crypto()
 
 # TODO
 # If date from first file in cache path is not datetime.now.date() then redownload, if not then check count
