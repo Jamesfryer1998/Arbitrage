@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import json
 import pandas as pd
 from datetime import datetime
 sys.path.insert(0, '/Users/james/Projects/arbitrage')
@@ -15,43 +16,69 @@ class TriangularArbitrage:
         self.tsym = ref_data['tsym']
         self.exchanges = ref_data['exchanges']
         self.fees = ref_data['exchange_fees']
-        self.combinations = None
+        self.combinations = []
+        self.time = datetime.now()
+        self.file_path = '/Users/james/Projects/arbitrage/arbitrage_system/triangular_arbitrage.json'
 
-    def get_all_crypto_combinations(self):
-        t1 = datetime.now()
-        all_symbols = []
-        combinations = []
-        [all_symbols.append(fsym) for fsym in self.fsym]
-        [all_symbols.append(tsym) for tsym in self.tsym]
+    # def get_all_crypto_combinations(self):
+    #     t1 = datetime.now()
+    #     all_symbols = []
+    #     combinations = []
+    #     [all_symbols.append(fsym) for fsym in self.fsym]
+    #     [all_symbols.append(tsym) for tsym in self.tsym]
         
-        count = 0
-        print(all_symbols)
-        for base in all_symbols:
-            for inter in all_symbols:
-                if inter != base:
-                    for end in all_symbols:
-                        if end != base and end != inter:
-                            combination = [base, inter, end]
-                            combinations.append(combination)
-                            count += 1
-        t2 = datetime.now()
-        print(f'TTR: {t2-t1}')
+    #     count = 0
+    #     print(all_symbols)
+    #     for base in all_symbols:
+    #         for inter in all_symbols:
+    #             if inter != base:
+    #                 for end in all_symbols:
+    #                     if end != base and end != inter:
+    #                         combination = [base, inter, end]
+    #                         combinations.append(combination)
+    #                         count += 1
+
+    #     self.combinations = combinations
+    #     t2 = datetime.now()
+    #     print(f'TTR: {t2-t1}')
 
     def get_stable_crypto_combinations(self):
         t1 = datetime.now()
         combinations = []
         count = 0
+
         for base in self.tsym:
             for inter in self.fsym:
                 if inter != base:
                     for end in self.fsym:
                         if end != inter:
                             combination = [f'{base}-{inter}', f'{inter}-{end}', f'{end}-{base}']
-                            combinations.append(combination)
+                            self.combinations.append(combination)
                             count += 1
         t2 = datetime.now()
-        self.combinations = combinations
-        print(f'{len(self.combinations)} Triangual Arbitrations Combinations found.')
+        # self.combinations = combinations
+        print(f'{count} Triangual Arbitrations Combinations found.')
+        print(f'TTR: {t2-t1}')
+
+    def get_crypto_crypto_combinations(self):
+        t1 = datetime.now()
+        all_symbols = []
+        [all_symbols.append(fsym) for fsym in self.fsym]
+        [all_symbols.append(tsym) for tsym in self.tsym]
+        
+        count = 0
+
+        for base in all_symbols:
+            for inter in all_symbols:
+                if inter != base:
+                    for end in all_symbols:
+                        if end != inter:
+                            combination = [f'{base}-{inter}', f'{inter}-{end}', f'{end}-{base}']
+                            self.combinations.append(combination)
+                            count += 1
+        t2 = datetime.now()
+        # self.combinations = combinations
+        print(f'{count} Triangual Arbitrations Combinations found.')
         print(f'TTR: {t2-t1}')
 
     def get_crypto_data(self, crypto_symbol, sort_type=None):
@@ -94,33 +121,56 @@ class TriangularArbitrage:
 
             # INCORPORATE FEES
             if point_1 != None and point_2 != None and point_3 != None:
-                investment_amount = self.investment
-                current_price_1 = point_1.get('rate')
-                final_investment = 0
                 price_info = {}
-
-                buy_quantity_1 = investment_amount / current_price_1
+                investment_amount = self.investment
+                final_investment = 0
+                current_price_1 = point_1.get('rate')
+                current_exchange_1 = point_1.get('exchange')
+                
+                buy_quantity_1 = (investment_amount - (self.fees[current_exchange_1] / 100 ) * investment_amount) / current_price_1
                 investment_amount_2 = buy_quantity_1
                 current_price_2 = point_2.get('rate')
+                current_exchange_2 = point_2.get('exchange')
 
-                buy_quantity_2 = investment_amount_2 / current_price_2
+                buy_quantity_2 = (investment_amount_2 - (self.fees[current_exchange_2] / 100 ) * investment_amount_2) / current_price_2
                 investment_amount_3 = buy_quantity_2
                 current_price_3 = point_3.get('rate')
+                current_exchange_3 = point_3.get('exchange')
 
-                sell_quantity_3 = investment_amount_3
+                # sell_quantity_3 = investment_amount_3 
+                sell_quantity_3 = investment_amount_3 - (investment_amount_3 * (self.fees[current_exchange_3] / 100 ))
+                # print(sell_quantity_3)
                 final_investment = round(sell_quantity_3 * current_price_3)
                 price_info = {
                     f'{point_1.get("exchange")}-{combination[0]}':current_price_1,
                     f'{point_2.get("exchange")}-{combination[1]}':current_price_2,
                     f'{point_3.get("exchange")}-{combination[2]}':current_price_3,
-                    'final_investment':final_investment
+                    'final_investment':final_investment,
+                    'profit': final_investment - self.investment,
+                    'time': str(self.time.date())
                 }
 
                 if final_investment > investment_amount and final_investment < investment_amount+2000:
+                    triangular_completion.append(price_info)
                     print(price_info)
 
+        if os.path.exists(self.file_path) is not True:
+            with open(self.file_path, "w") as file:
+                json.dump(triangular_completion, file, indent=3)
+
+        else:
+            tri_arb_data = load_json(self.file_path)
+            today = str(self.time.date())
+
+            if tri_arb_data[0]['time'] != today:
+                print('new file downloaded')
+                with open(self.file_path, "w") as file:
+                    json.dump(triangular_completion, file, indent=3)
+
+
+    
     def run_triangular_arbitrage(self):
-        # self.get_all_crypto_combinations()
+        # self.get_crypto_crypto_combinations()
         self.get_stable_crypto_combinations()
         self.find_triangular_arbitrage_opportunities_2()
 
