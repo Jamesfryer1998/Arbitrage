@@ -110,10 +110,10 @@ class Arbitrage:
         else:
             print(f'Arbitrage time stamps dont match: {buying["time"]} / {selling["time"]}')
 
-    def find_arbitrage(self):
-        if self.available_exchanges() == True:
-            self.compare_matching_symbols()
-            self.profitable_exchanges()
+    # def find_arbitrage(self):
+    #     if self.available_exchanges() == True:
+    #         self.compare_matching_symbols()
+    #         self.profitable_exchanges()
 
 def arbitrage_crypto_stable():
     cache_path = '/Users/james/Projects/arbitrage/crypto_download/cache'
@@ -155,7 +155,7 @@ def arbitrage_crypto_crypto():
     else:
         for fsym_1 in fsym_ref:
             for fsym_2 in fsym_ref:
-                # print(f'{fsym_1}-{fsym_2}')
+                print(f'{fsym_1}-{fsym_2}')
                 Arbitrage(fsym_1, fsym_2, cache_path).find_arbitrage()
                 count += 1
 

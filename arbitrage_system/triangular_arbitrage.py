@@ -20,28 +20,6 @@ class TriangularArbitrage:
         self.time = datetime.now()
         self.file_path = '/Users/james/Projects/arbitrage/arbitrage_system/triangular_arbitrage.json'
 
-    # def get_all_crypto_combinations(self):
-    #     t1 = datetime.now()
-    #     all_symbols = []
-    #     combinations = []
-    #     [all_symbols.append(fsym) for fsym in self.fsym]
-    #     [all_symbols.append(tsym) for tsym in self.tsym]
-        
-    #     count = 0
-    #     print(all_symbols)
-    #     for base in all_symbols:
-    #         for inter in all_symbols:
-    #             if inter != base:
-    #                 for end in all_symbols:
-    #                     if end != base and end != inter:
-    #                         combination = [base, inter, end]
-    #                         combinations.append(combination)
-    #                         count += 1
-
-    #     self.combinations = combinations
-    #     t2 = datetime.now()
-    #     print(f'TTR: {t2-t1}')
-
     def get_stable_crypto_combinations(self):
         t1 = datetime.now()
         combinations = []
@@ -112,9 +90,11 @@ class TriangularArbitrage:
 
     def find_triangular_arbitrage_opportunities_2(self):
         # output opportunities to a file
+        t1 = datetime.now()
         triangular_completion = []
 
         for combination in self.combinations:
+            
             point_1 = self.get_crypto_data(combination[0])
             point_2 = self.get_crypto_data(combination[1])
             point_3 = self.get_crypto_data(combination[2])
@@ -139,7 +119,6 @@ class TriangularArbitrage:
 
                 # sell_quantity_3 = investment_amount_3 
                 sell_quantity_3 = investment_amount_3 - (investment_amount_3 * (self.fees[current_exchange_3] / 100 ))
-                # print(sell_quantity_3)
                 final_investment = round(sell_quantity_3 * current_price_3)
                 price_info = {
                     f'{point_1.get("exchange")}-{combination[0]}':current_price_1,
@@ -154,6 +133,8 @@ class TriangularArbitrage:
                     triangular_completion.append(price_info)
                     print(price_info)
 
+        t2 = datetime.now()
+
         if os.path.exists(self.file_path) is not True:
             with open(self.file_path, "w") as file:
                 json.dump(triangular_completion, file, indent=3)
@@ -167,10 +148,11 @@ class TriangularArbitrage:
                 with open(self.file_path, "w") as file:
                     json.dump(triangular_completion, file, indent=3)
 
+        print(f'{len(triangular_completion)} profitable Triangular Opportunites found.')
+        print(f'Programme ran in {t2-t1}')
 
-    
     def run_triangular_arbitrage(self):
-        # self.get_crypto_crypto_combinations()
+        self.get_crypto_crypto_combinations()
         self.get_stable_crypto_combinations()
         self.find_triangular_arbitrage_opportunities_2()
 
