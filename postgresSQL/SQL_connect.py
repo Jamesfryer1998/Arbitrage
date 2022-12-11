@@ -40,4 +40,3 @@ class PostgresSQL:
     # def create_table(self):
 
 SQL = PostgresSQL(tri_arb_path)
-
