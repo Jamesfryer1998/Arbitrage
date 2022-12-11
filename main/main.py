@@ -16,7 +16,7 @@ def worker(cache_path, fsym, tsym, exchange):
 
 def crypto_to_stable_coin():
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
-    count = 0
+    
 
     CryptoCompareAPI(cache_path).find_available_cryptos_stable_data()
     runs = []
@@ -24,6 +24,7 @@ def crypto_to_stable_coin():
     for i in range(0, 4):
         t1 = datetime.datetime.now()
         jobs = []
+        count = 0
         for data in ref_data['available_crypto_stable']:
             symbol_split = data.split('-')
             try:
@@ -62,7 +63,7 @@ def crypto_to_stable_coin():
 def crypto_to_crypto():
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
     count = 0
-
+    
     CryptoCompareAPI(cache_path).find_available_crypto_crypto_data()
     runs = []
     print('------------------------------------')

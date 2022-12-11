@@ -94,7 +94,6 @@ class TriangularArbitrage:
         triangular_completion = []
 
         for combination in self.combinations:
-            
             point_1 = self.get_crypto_data(combination[0])
             point_2 = self.get_crypto_data(combination[1])
             point_3 = self.get_crypto_data(combination[2])
