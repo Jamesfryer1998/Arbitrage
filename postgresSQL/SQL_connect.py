@@ -12,6 +12,7 @@ class PostgresSQL:
     def __init__(self, file_path):
         self.connect_string = None
         self.conn = psycopg2.connect(self.connect_string)
+        self.tables = None
         self.time = datetime.now()
         self.file_path = file_path
         self.df = None
@@ -70,5 +71,19 @@ class PostgresSQL:
                 except psycopg2.errors.DuplicateTable as err:
                     pass
 
+    def check_tables(self):
+        with self.conn:
+            with self.conn.cursor() as cur:
+                fetch_sql = '''SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema='public'
+                '''
+                cur.execute(fetch_sql)
+                tables = cur.fetchall()
+                self.tables = tables
+                cur.close()
+
+        print(self.tables)
 
 SQL = PostgresSQL(tri_arb_path)
+SQL.check_tables()
