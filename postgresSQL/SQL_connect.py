@@ -10,7 +10,7 @@ tri_arb_path = '/Users/james/Projects/arbitrage/arbitrage_system/triangular_arbi
 
 class PostgresSQL:
     def __init__(self, file_path):
-        self.connect_string = None
+        self.connect_SQL_server()
         self.conn = psycopg2.connect(self.connect_string)
         self.tables = None
         self.time = datetime.now()
@@ -22,7 +22,6 @@ class PostgresSQL:
     def connect_SQL_server(self):
         postgres_login = load_json('/Users/james/Projects/SQL/dashboard/crypto/postgres_login.json')
         self.connect_string = f"host={postgres_login['host']} dbname=postgres user={postgres_login['user']} password={postgres_login['password']}"
-        self.conn = psycopg2.connect(self.connect_string)
 
     def convert_to_df(self):
         file = load_json(self.file_path)
@@ -50,13 +49,13 @@ class PostgresSQL:
 
     def create_table(self):
         query = f'''
-        CREATE TABLE IF NOT EXISTS {self.ticker} (
+        CREATE TABLE IF NOT EXISTS TRI_ARB (
             id SERIAL PRIMARY KEY,
-            base CHAR(n),
+            base CHAR(10),
             base_price FLOAT(4),
-            inter CHAR(n),
+            inter CHAR(10),
             inter_price FLOAT(4),
-            end CHAR(n),
+            end_ CHAR(10),
             end_price FLOAT(4),
             final_investment FLOAT(4),
             profit FLOAT(4),
@@ -68,6 +67,7 @@ class PostgresSQL:
                 try:
                     cur.execute(query)
                     self.conn.commit()
+                    print('TRI_ARB SQL table created.')
                 except psycopg2.errors.DuplicateTable as err:
                     pass
 
@@ -85,5 +85,43 @@ class PostgresSQL:
 
         print(self.tables)
 
+    def execute_values(self):
+        """
+        Using psycopg2.extras.execute_values() to insert df to database
+        """
+        tuples = [tuple(x) for x in self.df.to_numpy()]
+        cols = ','.join(list(self.df.columns))
+        print(cols)
+        print(tuples)
+        # query  = f'''INSERT INTO TRI_ARB ({cols})
+        # VALUES %s
+        # '''
+        # with self.conn:
+        #     with self.conn.cursor() as cur:
+        #         fetch_sql = f'''
+        #         SELECT COUNT(*)
+        #         FROM TRI_ARB
+        #         '''
+                
+        #         cur.execute(fetch_sql)
+        #         table_len = cur.fetchone()[0]
+
+        #         if table_len >= len(self.df):
+        #             # print('Table at sufficient count.')
+        #             pass
+        #         elif table_len == 0:
+        #             try:
+        #                 extras.execute_values(cur, query, tuples, page_size=len(self.df))
+        #                 self.conn.commit()
+        #             except (Exception, psycopg2.DatabaseError) as error:
+        #                 print("Error: %s" % error)
+        #                 self.conn.rollback()
+        #                 cur.close()
+        #                 return None
+        #             # print(f"    Values populated to {self.ticker}")
+        #             cur.close()   
+
 SQL = PostgresSQL(tri_arb_path)
+SQL.create_table()
 SQL.check_tables()
+SQL.execute_values()
