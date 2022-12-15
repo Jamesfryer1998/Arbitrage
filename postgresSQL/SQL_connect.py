@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import pandas as pd
 from datetime import datetime
 import psycopg2
@@ -36,7 +37,7 @@ class PostgresSQL:
                 'base_price':data_values[0],
                 'inter': data_keys[1],
                 'inter_price':data_values[1],
-                'end': data_keys[2],
+                'end_': data_keys[2],
                 'end_price':data_values[2],
                 'final_investment':data[i]['final_investment'],
                 'profit': data[i]['profit'],
@@ -45,17 +46,18 @@ class PostgresSQL:
             list_dict.append(dict)
 
         self.df = pd.DataFrame(list_dict)
-        # print(self.df)
+
+        print(self.df)
 
     def create_table(self):
         query = f'''
         CREATE TABLE IF NOT EXISTS TRI_ARB (
             id SERIAL PRIMARY KEY,
-            base CHAR(10),
+            base CHAR(100),
             base_price FLOAT(4),
-            inter CHAR(10),
+            inter CHAR(100),
             inter_price FLOAT(4),
-            end_ CHAR(10),
+            end_ CHAR(100),
             end_price FLOAT(4),
             final_investment FLOAT(4),
             profit FLOAT(4),
@@ -91,37 +93,54 @@ class PostgresSQL:
         """
         tuples = [tuple(x) for x in self.df.to_numpy()]
         cols = ','.join(list(self.df.columns))
-        print(cols)
-        print(tuples)
-        # query  = f'''INSERT INTO TRI_ARB ({cols})
-        # VALUES %s
-        # '''
-        # with self.conn:
-        #     with self.conn.cursor() as cur:
-        #         fetch_sql = f'''
-        #         SELECT COUNT(*)
-        #         FROM TRI_ARB
-        #         '''
-                
-        #         cur.execute(fetch_sql)
-        #         table_len = cur.fetchone()[0]
 
-        #         if table_len >= len(self.df):
-        #             # print('Table at sufficient count.')
-        #             pass
-        #         elif table_len == 0:
-        #             try:
-        #                 extras.execute_values(cur, query, tuples, page_size=len(self.df))
-        #                 self.conn.commit()
-        #             except (Exception, psycopg2.DatabaseError) as error:
-        #                 print("Error: %s" % error)
-        #                 self.conn.rollback()
-        #                 cur.close()
-        #                 return None
-        #             # print(f"    Values populated to {self.ticker}")
-        #             cur.close()   
+        query  = f'''INSERT INTO TRI_ARB ({cols})
+        VALUES %s
+        '''
+        with self.conn:
+            with self.conn.cursor() as cur:
+                fetch_sql = f'''
+                SELECT COUNT(*)
+                FROM TRI_ARB
+                '''
+                cur.execute(fetch_sql)
+                table_len = cur.fetchone()[0]
+
+                if table_len >= len(self.df):
+                    print('Table at sufficient count.')
+                    pass
+                elif table_len <= len(self.df):
+                    try:
+                        self.remove_table(['TRI_ARB'])
+                        
+                        time.sleep(1)
+                        extras.execute_values(cur, query, tuples, page_size=len(self.df))
+                        self.conn.commit()
+                        print('All TRI_ARB values uploaded.')
+                    except (Exception, psycopg2.DatabaseError) as error:
+                        print("Error: %s" % error)
+                        self.conn.rollback()
+                        cur.close()
+                        return None
+                    # print(f"    Values populated to {self.ticker}")
+                    cur.close()
+
+    def remove_table(self, table_name):
+        print(f'Deleting {len(table_name)}...')
+        with self.conn:
+            with self.conn.cursor() as cur:
+                for table in table_name:
+                    query = f'''DROP TABLE {table}
+                    '''
+                    try:
+                        cur.execute(query)
+                        print(f'Deleted {table}')
+        
+                    except (Exception, psycopg2.errors.UndefinedTable) as error:
+                        print(f'    {table} does not exist.')  
 
 SQL = PostgresSQL(tri_arb_path)
 SQL.create_table()
 SQL.check_tables()
 SQL.execute_values()
+# SQL.remove_table(['TRI_ARB'])
