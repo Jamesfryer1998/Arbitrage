@@ -87,7 +87,6 @@ class TriangularArbitrage:
             sort_by_value = sorted(exchange_prices, key=lambda i: i['rate'])
             return sort_by_value[0]
 
-
     def find_triangular_arbitrage_opportunities_2(self):
         # output opportunities to a file
         t1 = datetime.now()
@@ -155,4 +154,4 @@ class TriangularArbitrage:
         self.get_stable_crypto_combinations()
         self.find_triangular_arbitrage_opportunities_2()
 
-TriangularArbitrage(8000).run_triangular_arbitrage()
+TriangularArbitrage(1000).run_triangular_arbitrage()

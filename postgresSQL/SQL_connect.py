@@ -85,8 +85,6 @@ class PostgresSQL:
                 self.tables = tables
                 cur.close()
 
-        print(self.tables)
-
     def execute_values(self):
         """
         Using psycopg2.extras.execute_values() to insert df to database
@@ -111,7 +109,7 @@ class PostgresSQL:
                     pass
                 elif table_len <= len(self.df):
                     try:
-                        self.remove_table(['TRI_ARB'])
+                        # self.remove_table(['TRI_ARB'])
                         
                         time.sleep(1)
                         extras.execute_values(cur, query, tuples, page_size=len(self.df))
@@ -141,6 +139,6 @@ class PostgresSQL:
 
 SQL = PostgresSQL(tri_arb_path)
 SQL.create_table()
-SQL.check_tables()
+# SQL.check_tables()
 SQL.execute_values()
 # SQL.remove_table(['TRI_ARB'])
