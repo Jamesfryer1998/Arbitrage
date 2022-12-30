@@ -16,8 +16,6 @@ def worker(cache_path, fsym, tsym, exchange):
 
 def crypto_to_stable_coin():
     ref_data = load_json('/Users/james/Projects/arbitrage/crypto_download/symbol_list.json')
-    
-
     CryptoCompareAPI(cache_path).find_available_cryptos_stable_data()
     runs = []
 

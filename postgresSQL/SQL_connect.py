@@ -139,6 +139,6 @@ class PostgresSQL:
 
 SQL = PostgresSQL(tri_arb_path)
 SQL.create_table()
-# SQL.check_tables()
+SQL.check_tables()
 SQL.execute_values()
 # SQL.remove_table(['TRI_ARB'])
